@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/app-icon.png" alt="Posture Improvement Tracker Icon" width="120"/>
+</p>
+
 # 🧍‍♂️ Posture Improvement Tracker
 
 A progressive web app that helps users improve posture through guided exercises, gentle reminders, and biblical encouragement.
