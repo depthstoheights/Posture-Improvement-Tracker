@@ -1,48 +1,1573 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Posture Improvement Tracker</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="assets/icon-512.png" />
-  <meta name="theme-color" content="#ffffff" />
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 2rem;
-      background-color: #f5f5f5;
-    }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
-    .verse {
-      font-style: italic;
-      margin: 1rem 0;
-      color: #555;
-    }
-    button {
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      margin-top: 1rem;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1324">
+    <title>Posture Improvement Tracker</title>
+    <meta name="description" content="Gentle posture reminders, micro-break exercises, and a simple tracker. Reflective pacing, audio cues, and exportable logs.">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Posture Improvement Tracker">
+    <meta property="og:description" content="Gentle posture reminders, micro-break exercises, and a simple tracker. Reflective pacing, audio cues, and exportable logs.">
+    <meta property="og:url" content="https://depthstoheights.github.io/Posture-Improvement-Tracker/">
+    <meta property="og:type" content="website">
+    
+    <style>
+        /* STYLE PACK: Cypress & Sky — forest/sky/cream palette; sans body + serif pull-quotes; soft shadows; zoom-very-gentle motion */
+        :root {
+            --forest-dark: #1a4b3a;
+            --forest: #2d6b4f;
+            --forest-light: #4a8b6e;
+            --sky-dark: #2a4b6b;
+            --sky: #4a7ba7;
+            --sky-light: #87ceeb;
+            --cream: #fefdf8;
+            --cream-dark: #f5f4ef;
+            --text-dark: #1a2f1a;
+            --shadow: rgba(26, 75, 58, 0.15);
+            
+            --font-body: system-ui, -apple-system, sans-serif;
+            --font-serif: Georgia, 'Times New Roman', serif;
+            
+            --motion-speed: 240ms;
+            --motion-easing: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* Header */
+        header {
+            background: var(--forest);
+            color: var(--cream);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .brand {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Hook Section */
+        .hook-section {
+            background: linear-gradient(135deg, var(--sky) 0%, var(--sky-dark) 100%);
+            color: var(--cream);
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hook-content {
+            position: relative;
+            z-index: 2;
+            transform: scale(0.95);
+            opacity: 0;
+            animation: zoomGentle 1s var(--motion-easing) forwards;
+        }
+        
+        @keyframes zoomGentle {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .hook-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* Buttons */
+        .btn {
+            background: var(--forest);
+            color: var(--cream);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all var(--motion-speed) var(--motion-easing);
+            box-shadow: 0 3px 8px var(--shadow);
+            font-family: var(--font-body);
+        }
+        
+        .btn:hover, .btn:focus {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 5px 15px var(--shadow);
+            background: var(--forest-light);
+        }
+        
+        .btn-primary {
+            background: var(--sky);
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Sections */
+        .section {
+            background: var(--cream);
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--motion-speed) var(--motion-easing);
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            color: var(--forest);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        /* Quick Check Routine */
+        .routine-step {
+            background: var(--cream-dark);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--forest);
+            display: none;
+        }
+        
+        .routine-step.active {
+            display: block;
+            animation: slideInGentle var(--motion-speed) var(--motion-easing);
+        }
+        
+        @keyframes slideInGentle {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .step-title {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            color: var(--forest);
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-counter {
+            color: var(--sky);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Micro-breaks */
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .exercise-card {
+            background: var(--cream-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all var(--motion-speed) var(--motion-easing);
+            cursor: pointer;
+        }
+        
+        .exercise-card:hover {
+            border-color: var(--sky);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+        
+        .exercise-title {
+            font-family: var(--font-serif);
+            color: var(--forest);
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-duration {
+            color: var(--sky);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Tracker */
+        .tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--cream-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--forest);
+            font-family: var(--font-serif);
+        }
+        
+        .stat-label {
+            color: var(--sky);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Chart */
+        .chart-container {
+            background: var(--cream-dark);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .chart {
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            height: 200px;
+            gap: 0.5rem;
+        }
+        
+        .chart-bar {
+            background: var(--sky);
+            min-width: 30px;
+            border-radius: 4px 4px 0 0;
+            transition: all var(--motion-speed) var(--motion-easing);
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .chart-bar:hover {
+            background: var(--sky-light);
+            transform: scale(1.05);
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--text-dark);
+        }
+        
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn var(--motion-speed) var(--motion-easing);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: var(--cream);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: scale(0.9);
+            animation: modalIn var(--motion-speed) var(--motion-easing) forwards;
+        }
+        
+        @keyframes modalIn {
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--cream-dark);
+        }
+        
+        .modal-title {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--forest);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all var(--motion-speed) var(--motion-easing);
+        }
+        
+        .close-btn:hover {
+            background: var(--cream-dark);
+            transform: rotate(90deg);
+        }
+        
+        /* Audio Controls */
+        .audio-controls {
+            background: var(--cream-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .audio-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .slider {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--sky);
+        }
+        
+        /* Accessibility */
+        .accessibility-panel {
+            background: var(--cream-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        .accessibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .toggle-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .toggle-control input[type="checkbox"] {
+            accent-color: var(--sky);
+            transform: scale(1.2);
+        }
+        
+        /* Reading Mode */
+        body.reading-mode {
+            font-size: 112%;
+            line-height: 1.8;
+        }
+        
+        body.reading-mode .container {
+            max-width: 70ch;
+        }
+        
+        /* High Contrast */
+        body.high-contrast {
+            --cream: #ffffff;
+            --cream-dark: #f0f0f0;
+            --text-dark: #000000;
+            --forest: #004400;
+            --sky: #000088;
+        }
+        
+        /* Dyslexia Font */
+        body.dyslexia-font {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        body.pause-animations *, 
+        body.pause-animations *::before, 
+        body.pause-animations *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        
+        /* Speed Controls */
+        body.speed-slow {
+            --motion-speed: 400ms;
+        }
+        
+        body.speed-faster {
+            --motion-speed: 150ms;
+        }
+        
+        /* Timer Display */
+        .timer-display {
+            font-size: 3rem;
+            font-family: var(--font-serif);
+            color: var(--forest);
+            text-align: center;
+            margin: 2rem 0;
+            font-weight: bold;
+        }
+        
+        .reminder-banner {
+            background: var(--sky);
+            color: var(--cream);
+            padding: 1rem;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            transform: translateY(-100%);
+            transition: transform var(--motion-speed) var(--motion-easing);
+        }
+        
+        .reminder-banner.show {
+            transform: translateY(0);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--forest);
+            color: var(--cream);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .donation-note {
+            background: var(--cream-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: center;
+            border: 2px solid var(--sky);
+        }
+        
+        .paypal-link {
+            color: var(--sky);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .paypal-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* SVG Icons */
+        .exercise-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            display: block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hook-section {
+                padding: 2rem 1rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .audio-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>🧍‍♂️ Posture Improvement Tracker</h1>
-  <p class="verse">“Do you not know that your bodies are temples of the Holy Spirit?” — 1 Corinthians 6:19–20</p>
-  <p>Welcome! This app helps you restore posture through gentle exercises and biblical encouragement.</p>
-  <button onclick="alert('Quick Check started!')">Start Quick Check</button>
+    <!-- Reminder Banner -->
+    <div id="reminderBanner" class="reminder-banner">
+        <p>Time for a posture check! <button class="btn btn-small" onclick="dismissReminder()">Start Check</button> <button class="btn btn-small" onclick="dismissReminder()">Dismiss</button></p>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="brand">Depths to Heights</div>
+                <div class="controls">
+                    <button class="btn btn-small" onclick="openModal('audioModal')">Audio</button>
+                    <button class="btn btn-small" onclick="openModal('accessibilityModal')">Accessibility</button>
+                    <button class="btn btn-small" onclick="shareApp()">Share</button>
+                    <button class="btn btn-small" onclick="openModal('helpModal')">Help</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hook Section -->
+    <section class="hook-section">
+        <div class="container">
+            <div class="hook-content">
+                <h1 class="hook-title">Straighten up, breathe deep—two minutes to reset your posture.</h1>
+                <button class="btn btn-primary" onclick="startQuickCheck()">Start Quick Check</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Quick Check Section -->
+        <section id="quickCheckSection" class="section">
+            <h2 class="section-title">Quick Check Routine</h2>
+            <div id="routineContainer">
+                <div class="routine-step active" id="step0">
+                    <div class="step-counter">Step 1 of 5</div>
+                    <h3 class="step-title">Neck Alignment</h3>
+                    <p>Gently tuck your chin back, lengthening the back of your neck. Imagine a string pulling the crown of your head toward the ceiling. Hold for 5 seconds.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+                <div class="routine-step" id="step1">
+                    <div class="step-counter">Step 2 of 5</div>
+                    <h3 class="step-title">Shoulder Release</h3>
+                    <p>Roll your shoulders up, back, and down. Feel your shoulder blades settle into place. Take a deep breath and release any tension. Repeat 3 times.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+                <div class="routine-step" id="step2">
+                    <div class="step-counter">Step 3 of 5</div>
+                    <h3 class="step-title">Spine Extension</h3>
+                    <p>Place your hands on your lower back and gently arch backward, opening your chest. Feel the front of your body lengthen. Hold for 5 seconds.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+                <div class="routine-step" id="step3">
+                    <div class="step-counter">Step 4 of 5</div>
+                    <h3 class="step-title">Hip Alignment</h3>
+                    <p>Stand tall with feet hip-width apart. Tilt your pelvis slightly forward to find neutral spine. Engage your core gently to support your lower back.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+                <div class="routine-step" id="step4">
+                    <div class="step-counter">Step 5 of 5</div>
+                    <h3 class="step-title">Wrist & Hand Reset</h3>
+                    <p>Extend your arms forward, flex your wrists up and down, then make gentle circles. Shake out your hands and fingers to release tension.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn" onclick="completeRoutine()">Complete Check</button>
+                    </div>
+                </div>
+                <div class="routine-step" id="stepComplete">
+                    <h3 class="step-title">Great Work!</h3>
+                    <p>You've completed your posture check. Your body thanks you for this mindful moment of care.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn" onclick="resetRoutine()">Start Over</button>
+                        <button class="btn" onclick="logCheckIn()">Log This Session</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Micro-Breaks Section -->
+        <section class="section">
+            <h2 class="section-title">Micro-Break Exercises</h2>
+            <p style="text-align: center; margin-bottom: 2rem; color: var(--sky-dark);">Quick 30-60 second exercises for throughout your day</p>
+            <div class="exercise-grid">
+                <div class="exercise-card" onclick="startExercise('neck')">
+                    <svg class="exercise-icon" viewBox="0 0 100 100">
+                        <circle cx="50" cy="30" r="15" fill="var(--sky)" />
+                        <rect x="45" y="45" width="10" height="30" fill="var(--forest)" />
+                        <path d="M35 55 Q50 45 65 55" stroke="var(--forest)" stroke-width="3" fill="none" />
+                    </svg>
+                    <h3 class="exercise-title">Neck Circles</h3>
+                    <div class="exercise-duration">45 seconds</div>
+                    <p>Gentle circular movements to release neck tension and improve mobility.</p>
+                </div>
+                
+                <div class="exercise-card" onclick="startExercise('shoulders')">
+                    <svg class="exercise-icon" viewBox="0 0 100 100">
+                        <ellipse cx="50" cy="40" rx="25" ry="15" fill="var(--sky)" />
+                        <circle cx="30" cy="30" r="8" fill="var(--forest)" />
+                        <circle cx="70" cy="30" r="8" fill="var(--forest)" />
+                    </svg>
+                    <h3 class="exercise-title">Shoulder Shrugs</h3>
+                    <div class="exercise-duration">30 seconds</div>
+                    <p>Lift and release shoulders to relieve upper back and neck stress.</p>
+                </div>
+                
+                <div class="exercise-card" onclick="startExercise('chest')">
+                    <svg class="exercise-icon" viewBox="0 0 100 100">
+                        <path d="M20 50 Q50 20 80 50 Q50 80 20 50" fill="var(--sky)" />
+                        <path d="M30 50 L70 50 M50 30 L50 70" stroke="var(--forest)" stroke-width="3" />
+                    </svg>
+                    <h3 class="exercise-title">Chest Opener</h3>
+                    <div class="exercise-duration">60 seconds</div>
+                    <p>Counter forward head posture with gentle chest stretching.</p>
+                </div>
+                
+                <div class="exercise-card" onclick="startExercise('spine')">
+                    <svg class="exercise-icon" viewBox="0 0 100 100">
+                        <path d="M50 10 Q30 30 50 50 Q70 70 50 90" stroke="var(--forest)" stroke-width="4" fill="none" />
+                        <circle cx="50" cy="25" r="3" fill="var(--sky)" />
+                        <circle cx="50" cy="50" r="3" fill="var(--sky)" />
+                        <circle cx="50" cy="75" r="3" fill="var(--sky)" />
+                    </svg>
+                    <h3 class="exercise-title">Spinal Wave</h3>
+                    <div class="exercise-duration">45 seconds</div>
+                    <p>Flowing movement to mobilize the entire spine.</p>
+                </div>
+                
+                <div class="exercise-card" onclick="startExercise('hips')">
+                    <svg class="exercise-icon" viewBox="0 0 100 100">
+                        <ellipse cx="50" cy="50" rx="20" ry="15" fill="var(--sky)" />
+                        <rect x="20" y="65" width="15" height="25" fill="var(--forest)" />
+                        <rect x="65" y="65" width="15" height="25" fill="var(--forest)" />
+                    </svg>
+                    <h3 class="exercise-title">Hip Circles</h3>
+                    <div class="exercise-duration">40 seconds</div>
+                    <p>Gentle hip rotations to counter sitting posture effects.</p>
+                </div>
+                
+                <div class="exercise-card" onclick="startExercise('wrists')">
+                    <svg class="exercise-icon" viewBox="0 0 100 100">
+                        <rect x="35" y="60" width="30" height="8" fill="var(--forest)" />
+                        <circle cx="40" cy="45" r="4" fill="var(--sky)" />
+                        <circle cx="50" cy="40" r="4" fill="var(--sky)" />
+                        <circle cx="60" cy="45" r="4" fill="var(--sky)" />
+                        <path d="M40 45 Q50 25 60 45" stroke="var(--forest)" stroke-width="2" fill="none" />
+                    </svg>
+                    <h3 class="exercise-title">Wrist Flexor Stretch</h3>
+                    <div class="exercise-duration">50 seconds</div>
+                    <p>Essential stretches for computer users and desk workers.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timer/Reminders Section -->
+        <section class="section">
+            <h2 class="section-title">Posture Reminders</h2>
+            <div style="text-align: center;">
+                <p style="margin-bottom: 2rem; color: var(--sky-dark);">Set regular intervals to remind yourself to check your posture</p>
+                
+                <div style="margin: 2rem 0;">
+                    <label for="reminderInterval" style="display: block; margin-bottom: 1rem; font-weight: bold;">Reminder Interval:</label>
+                    <select id="reminderInterval" style="padding: 0.5rem; font-size: 1rem; border-radius: 4px; border: 2px solid var(--sky);">
+                        <option value="0">Off</option>
+                        <option value="30" selected>30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                    </select>
+                </div>
+                
+                <div style="margin: 2rem 0;">
+                    <button class="btn" onclick="requestNotificationPermission()">Enable Notifications</button>
+                    <button class="btn" onclick="startReminders()">Start Reminders</button>
+                    <button class="btn" onclick="stopReminders()">Stop Reminders</button>
+                </div>
+                
+                <div id="reminderStatus" style="margin-top: 1rem; color: var(--sky-dark); font-style: italic;">
+                    Reminders are off
+                </div>
+            </div>
+        </section>
+
+        <!-- Tracker Section -->
+        <section class="section">
+            <h2 class="section-title">Progress Tracker</h2>
+            
+            <div class="tracker-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="todayCount">0</div>
+                    <div class="stat-label">Today's Checks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="weekCount">0</div>
+                    <div class="stat-label">This Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="streakCount">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total Checks</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: var(--forest);">Weekly Progress</h3>
+                <div class="chart" id="weeklyChart">
+                    <!-- Chart bars will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn" onclick="exportData('json')">Export JSON</button>
+                <button class="btn" onclick="exportData('csv')">Export CSV</button>
+            </div>
+        </section>
+
+        <!-- Notes & Sources Section -->
+        <section class="section">
+            <h2 class="section-title">Notes & Sources</h2>
+            
+            <div style="background: var(--cream-dark); padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                <h3 style="color: var(--forest); margin-bottom: 1rem; font-family: var(--font-serif);">What The Bible Says:</h3>
+                <blockquote style="font-style: italic; color: var(--sky-dark); margin: 1rem 0; padding-left: 1rem; border-left: 3px solid var(--sky);">
+                    "Do you not know that your bodies are temples of the Holy Spirit, who is in you, whom you have received from God? You are not your own; you were bought at a price. Therefore honor God with your bodies." - 1 Corinthians 6:19-20
+                </blockquote>
+                <p>Our bodies are gifts to be stewarded well, including maintaining good posture as part of overall health and self-care.</p>
+            </div>
+            
+            <div style="background: var(--cream-dark); padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                <h3 style="color: var(--forest); margin-bottom: 1rem; font-family: var(--font-serif);">Ergonomics Research Suggests:</h3>
+                <ul style="margin-left: 1.5rem; color: var(--sky-dark);">
+                    <li><strong>Forward head posture</strong> can increase stress on cervical vertebrae by 10-15 pounds per inch forward.</li>
+                    <li><strong>Regular movement breaks</strong> every 30-60 minutes can significantly reduce musculoskeletal discomfort.</li>
+                    <li><strong>Micro-exercises</strong> and postural awareness training show measurable improvements in workplace wellness.</li>
+                    <li><strong>Mindful movement</strong> practices support both physical alignment and mental clarity.</li>
+                </ul>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-dark);">
+                    <em>Sources: American Journal of Industrial Medicine, Journal of Occupational Rehabilitation, Applied Ergonomics</em>
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Donation Note -->
+    <div class="container">
+        <div class="donation-note">
+            <h3 style="color: var(--forest); margin-bottom: 1rem;">Support This Work</h3>
+            <p style="margin-bottom: 1rem;">If this app has helped you develop better posture habits, consider supporting our mission to create more wellness tools.</p>
+            <a href="https://www.paypal.com/donate/?hosted_button_id=8GRE7B8C3TP2U" class="paypal-link" target="_blank" rel="noopener">Donate via PayPal</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p><strong>Made by Justin | Depths to Heights</strong></p>
+            <p style="margin: 1rem 0;">depthstoheights@gmail.com</p>
+            <p style="font-size: 0.9rem; opacity: 0.8;">This app provides general wellness guidance and is not medical advice. Consult healthcare professionals for persistent pain or health concerns.</p>
+            <button class="btn btn-small" onclick="openModal('aboutModal')" style="margin-top: 1rem;">About</button>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    
+    <!-- Audio Modal -->
+    <div id="audioModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Audio Settings</h3>
+                <button class="close-btn" onclick="closeModal('audioModal')">&times;</button>
+            </div>
+            
+            <div class="audio-controls">
+                <div class="audio-row">
+                    <label>Background Music</label>
+                    <div class="slider">
+                        <input type="range" id="musicVolume" min="0" max="100" value="20">
+                        <span id="musicVolumeDisplay">20%</span>
+                    </div>
+                </div>
+                
+                <div class="audio-row">
+                    <label>Sound Effects</label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="sfxToggle" checked>
+                        <span>Enabled</span>
+                    </label>
+                </div>
+                
+                <div class="audio-row">
+                    <label>Narration</label>
+                    <label class="toggle-control">
+                        <input type="checkbox" id="narrationToggle">
+                        <span>Enabled</span>
+                    </label>
+                </div>
+                
+                <div class="audio-row">
+                    <label>Narration Speed</label>
+                    <div class="slider">
+                        <input type="range" id="narrationSpeed" min="75" max="125" value="90">
+                        <span id="narrationSpeedDisplay">0.9x</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility Modal -->
+    <div id="accessibilityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Accessibility Settings</h3>
+                <button class="close-btn" onclick="closeModal('accessibilityModal')">&times;</button>
+            </div>
+            
+            <div class="accessibility-panel">
+                <div class="accessibility-grid">
+                    <label class="toggle-control">
+                        <input type="checkbox" id="readingModeToggle">
+                        <span>Reading Mode</span>
+                    </label>
+                    
+                    <label class="toggle-control">
+                        <input type="checkbox" id="highContrastToggle">
+                        <span>High Contrast</span>
+                    </label>
+                    
+                    <label class="toggle-control">
+                        <input type="checkbox" id="dyslexiaFontToggle">
+                        <span>Dyslexia-Friendly Font</span>
+                    </label>
+                    
+                    <label class="toggle-control">
+                        <input type="checkbox" id="pauseAnimationsToggle">
+                        <span>Pause Animations</span>
+                    </label>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <label for="textSizeSlider" style="display: block; margin-bottom: 0.5rem;">Text Size</label>
+                    <input type="range" id="textSizeSlider" min="80" max="150" value="100" style="width: 100%;">
+                    <span id="textSizeDisplay">100%</span>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <label for="speedControl" style="display: block; margin-bottom: 0.5rem;">Animation Speed</label>
+                    <select id="speedControl" style="width: 100%; padding: 0.5rem;">
+                        <option value="slow">Slow</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="faster">Faster</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Help & Support</h3>
+                <button class="close-btn" onclick="closeModal('helpModal')">&times;</button>
+            </div>
+            
+            <div style="max-width: 500px;">
+                <h4 style="color: var(--forest); margin-bottom: 1rem;">How Reminders Work</h4>
+                <p style="margin-bottom: 1rem;">This app can send notifications when the browser tab is active. Background notifications (when the app is closed) may not work consistently due to browser limitations.</p>
+                
+                <h4 style="color: var(--forest); margin-bottom: 1rem;">Getting the Best Experience</h4>
+                <ul style="margin-left: 1.5rem; margin-bottom: 2rem;">
+                    <li>Keep the app open in a browser tab for reliable reminders</li>
+                    <li>Use the audio controls to customize your experience</li>
+                    <li>Enable accessibility features as needed</li>
+                    <li>Regular micro-breaks are more effective than long sessions</li>
+                </ul>
+                
+                <div style="background: #ffe6e6; padding: 1rem; border-radius: 8px; border-left: 4px solid #d73527;">
+                    <h4 style="color: #d73527; margin-bottom: 0.5rem;">Crisis Support</h4>
+                    <p><strong>U.S.:</strong> Call or Text 988 for the Suicide & Crisis Lifeline</p>
+                    <p><strong>Elsewhere:</strong> Use your local emergency number</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">If you're experiencing thoughts of self-harm, please reach out for professional support immediately.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">About Posture Improvement Tracker</h3>
+                <button class="close-btn" onclick="closeModal('aboutModal')">&times;</button>
+            </div>
+            
+            <div style="max-width: 500px;">
+                <p style="margin-bottom: 1.5rem;">A gentle, reflective app to help you develop better posture habits through mindful movement and regular check-ins.</p>
+                
+                <h4 style="color: var(--forest); margin-bottom: 1rem;">Contact & Support</h4>
+                <p><strong>Creator:</strong> Made by Justin</p>
+                <p><strong>Brand:</strong> Depths to Heights</p>
+                <p><strong>Email:</strong> depthstoheights@gmail.com</p>
+                <p style="margin: 1rem 0;"><a href="https://www.paypal.com/donate/?hosted_button_id=8GRE7B8C3TP2U" class="paypal-link" target="_blank" rel="noopener">Support via PayPal</a></p>
+                
+                <div style="background: var(--cream-dark); padding: 1rem; border-radius: 8px; margin-top: 2rem;">
+                    <h4 style="color: var(--forest); margin-bottom: 0.5rem;">Disclaimer</h4>
+                    <p style="font-size: 0.9rem;">This app provides general wellness guidance and is not medical advice. The exercises and suggestions are for general wellness purposes only. Please consult healthcare professionals for persistent pain, injury concerns, or specific medical conditions. Use this app at your own discretion and stop any activity that causes discomfort.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exercise Modal -->
+    <div id="exerciseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exerciseTitle">Exercise</h3>
+                <button class="close-btn" onclick="closeModal('exerciseModal')">&times;</button>
+            </div>
+            
+            <div id="exerciseContent" style="text-align: center;">
+                <div class="timer-display" id="exerciseTimer">30</div>
+                <p id="exerciseInstructions">Follow the instructions and breathe deeply.</p>
+                <div style="margin-top: 2rem;">
+                    <button class="btn" id="exerciseStartBtn" onclick="startExerciseTimer()">Start</button>
+                    <button class="btn" onclick="closeModal('exerciseModal')">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let currentStep = 0;
+        let reminderInterval = null;
+        let reminderTimeoutId = null;
+        let exerciseTimeoutId = null;
+        let postureLog = JSON.parse(localStorage.getItem('postureLog') || '[]');
+        let hasNotificationPermission = false;
+        
+        // Audio Context
+        let audioContext = null;
+        let musicGain = null;
+        let sfxGain = null;
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            updateStats();
+            generateWeeklyChart();
+            setupEventListeners();
+            
+            // Animate sections into view
+            setTimeout(() => {
+                document.querySelectorAll('.section').forEach((section, index) => {
+                    setTimeout(() => {
+                        section.classList.add('visible');
+                    }, index * 200);
+                });
+            }, 500);
+        });
+        
+        function initializeApp() {
+            // Load saved preferences
+            const musicVolume = localStorage.getItem('musicVolume') || '20';
+            const sfxEnabled = localStorage.getItem('sfxEnabled') !== 'false';
+            const narrationEnabled = localStorage.getItem('narrationEnabled') === 'true';
+            const narrationSpeed = localStorage.getItem('narrationSpeed') || '90';
+            
+            document.getElementById('musicVolume').value = musicVolume;
+            document.getElementById('musicVolumeDisplay').textContent = musicVolume + '%';
+            document.getElementById('sfxToggle').checked = sfxEnabled;
+            document.getElementById('narrationToggle').checked = narrationEnabled;
+            document.getElementById('narrationSpeed').value = narrationSpeed;
+            document.getElementById('narrationSpeedDisplay').textContent = (narrationSpeed / 100).toFixed(1) + 'x';
+            
+            // Initialize audio after user interaction
+            document.addEventListener('click', initializeAudio, { once: true });
+        }
+        
+        function initializeAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create gain nodes for volume control
+                musicGain = audioContext.createGain();
+                sfxGain = audioContext.createGain();
+                
+                musicGain.connect(audioContext.destination);
+                sfxGain.connect(audioContext.destination);
+                
+                // Set initial volumes
+                const musicVolume = document.getElementById('musicVolume').value;
+                musicGain.gain.value = musicVolume / 100 * 0.3; // Keep music subtle
+                sfxGain.gain.value = document.getElementById('sfxToggle').checked ? 0.5 : 0;
+                
+                // Start subtle ambient loop
+                playAmbientMusic();
+            }
+        }
+        
+        function playAmbientMusic() {
+            if (!audioContext || !musicGain) return;
+            
+            // Create a simple, calming tone sequence
+            const frequencies = [220, 330, 440, 330]; // A, E, A, E
+            let noteIndex = 0;
+            
+            function playNote() {
+                const oscillator = audioContext.createOscillator();
+                const noteGain = audioContext.createGain();
+                
+                oscillator.connect(noteGain);
+                noteGain.connect(musicGain);
+                
+                oscillator.frequency.value = frequencies[noteIndex];
+                oscillator.type = 'sine';
+                
+                noteGain.gain.setValueAtTime(0, audioContext.currentTime);
+                noteGain.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.5);
+                noteGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 2);
+                
+                noteIndex = (noteIndex + 1) % frequencies.length;
+                
+                setTimeout(playNote, 4000); // Play next note after 4 seconds
+            }
+            
+            playNote();
+        }
+        
+        function playChime() {
+            if (!audioContext || !sfxGain || !document.getElementById('sfxToggle').checked) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            oscillator.connect(gain);
+            gain.connect(sfxGain);
+            
+            oscillator.frequency.value = 880; // High A
+            oscillator.type = 'sine';
+            
+            gain.gain.setValueAtTime(0, audioContext.currentTime);
+            gain.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+        
+        function setupEventListeners() {
+            // Audio controls
+            document.getElementById('musicVolume').addEventListener('input', function() {
+                const value = this.value;
+                document.getElementById('musicVolumeDisplay').textContent = value + '%';
+                localStorage.setItem('musicVolume', value);
+                if (musicGain) {
+                    musicGain.gain.value = value / 100 * 0.3;
+                }
+            });
+            
+            document.getElementById('sfxToggle').addEventListener('change', function() {
+                localStorage.setItem('sfxEnabled', this.checked);
+                if (sfxGain) {
+                    sfxGain.gain.value = this.checked ? 0.5 : 0;
+                }
+            });
+            
+            document.getElementById('narrationToggle').addEventListener('change', function() {
+                localStorage.setItem('narrationEnabled', this.checked);
+            });
+            
+            document.getElementById('narrationSpeed').addEventListener('input', function() {
+                const value = this.value;
+                document.getElementById('narrationSpeedDisplay').textContent = (value / 100).toFixed(1) + 'x';
+                localStorage.setItem('narrationSpeed', value);
+            });
+            
+            // Accessibility controls
+            document.getElementById('readingModeToggle').addEventListener('change', function() {
+                document.body.classList.toggle('reading-mode', this.checked);
+            });
+            
+            document.getElementById('highContrastToggle').addEventListener('change', function() {
+                document.body.classList.toggle('high-contrast', this.checked);
+            });
+            
+            document.getElementById('dyslexiaFontToggle').addEventListener('change', function() {
+                document.body.classList.toggle('dyslexia-font', this.checked);
+            });
+            
+            document.getElementById('pauseAnimationsToggle').addEventListener('change', function() {
+                document.body.classList.toggle('pause-animations', this.checked);
+            });
+            
+            document.getElementById('textSizeSlider').addEventListener('input', function() {
+                const value = this.value;
+                document.getElementById('textSizeDisplay').textContent = value + '%';
+                document.body.style.fontSize = value + '%';
+            });
+            
+            document.getElementById('speedControl').addEventListener('change', function() {
+                document.body.className = document.body.className.replace(/speed-\w+/g, '');
+                if (this.value !== 'normal') {
+                    document.body.classList.add('speed-' + this.value);
+                }
+            });
+            
+            // Reminder interval
+            document.getElementById('reminderInterval').addEventListener('change', function() {
+                if (reminderTimeoutId) {
+                    clearTimeout(reminderTimeoutId);
+                    reminderTimeoutId = null;
+                }
+                updateReminderStatus();
+            });
+        }
+        
+        // Quick Check Functions
+        function startQuickCheck() {
+            currentStep = 0;
+            resetRoutine();
+            document.getElementById('quickCheckSection').scrollIntoView({ behavior: 'smooth' });
+            playChime();
+        }
+        
+        function nextStep() {
+            document.getElementById('step' + currentStep).classList.remove('active');
+            currentStep++;
+            document.getElementById('step' + currentStep).classList.add('active');
+            playChime();
+        }
+        
+        function completeRoutine() {
+            document.getElementById('step' + currentStep).classList.remove('active');
+            document.getElementById('stepComplete').classList.add('active');
+            playChime();
+        }
+        
+        function resetRoutine() {
+            document.querySelectorAll('.routine-step').forEach(step => step.classList.remove('active'));
+            currentStep = 0;
+            document.getElementById('step0').classList.add('active');
+        }
+        
+        function logCheckIn() {
+            const now = new Date();
+            const logEntry = {
+                timestamp: now.toISOString(),
+                date: now.toISOString().split('T')[0],
+                type: 'quick-check'
+            };
+            
+            postureLog.push(logEntry);
+            localStorage.setItem('postureLog', JSON.stringify(postureLog));
+            
+            updateStats();
+            generateWeeklyChart();
+            playChime();
+            
+            alert('Great job! Your posture check has been logged.');
+        }
+        
+        // Exercise Functions
+        function startExercise(exerciseType) {
+            const exercises = {
+                neck: {
+                    title: 'Neck Circles',
+                    duration: 45,
+                    instructions: 'Slowly roll your head in gentle circles. 5 times each direction. Keep movements smooth and controlled.'
+                },
+                shoulders: {
+                    title: 'Shoulder Shrugs',
+                    duration: 30,
+                    instructions: 'Lift shoulders up toward ears, hold for 2 seconds, then release. Repeat 10 times.'
+                },
+                chest: {
+                    title: 'Chest Opener',
+                    duration: 60,
+                    instructions: 'Clasp hands behind back, lift chest, squeeze shoulder blades together. Hold and breathe deeply.'
+                },
+                spine: {
+                    title: 'Spinal Wave',
+                    duration: 45,
+                    instructions: 'Starting from head, slowly roll spine down vertebra by vertebra, then reverse back up.'
+                },
+                hips: {
+                    title: 'Hip Circles',
+                    duration: 40,
+                    instructions: 'Hands on hips, make slow circles with your pelvis. 5 times each direction.'
+                },
+                wrists: {
+                    title: 'Wrist Flexor Stretch',
+                    duration: 50,
+                    instructions: 'Extend arm forward, palm up. Gently pull fingers back with other hand. Hold 25 seconds each arm.'
+                }
+            };
+            
+            const exercise = exercises[exerciseType];
+            document.getElementById('exerciseTitle').textContent = exercise.title;
+            document.getElementById('exerciseTimer').textContent = exercise.duration;
+            document.getElementById('exerciseInstructions').textContent = exercise.instructions;
+            document.getElementById('exerciseStartBtn').onclick = () => startExerciseTimer(exercise.duration);
+            
+            openModal('exerciseModal');
+        }
+        
+        function startExerciseTimer(duration = 30) {
+            const timerDisplay = document.getElementById('exerciseTimer');
+            const startBtn = document.getElementById('exerciseStartBtn');
+            
+            let timeLeft = duration;
+            startBtn.textContent = 'Running...';
+            startBtn.disabled = true;
+            
+            playChime();
+            
+            exerciseTimeoutId = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(exerciseTimeoutId);
+                    timerDisplay.textContent = 'Complete!';
+                    startBtn.textContent = 'Done';
+                    startBtn.disabled = false;
+                    playChime();
+                    
+                    // Log the exercise
+                    const now = new Date();
+                    const logEntry = {
+                        timestamp: now.toISOString(),
+                        date: now.toISOString().split('T')[0],
+                        type: 'micro-break'
+                    };
+                    
+                    postureLog.push(logEntry);
+                    localStorage.setItem('postureLog', JSON.stringify(postureLog));
+                    updateStats();
+                    generateWeeklyChart();
+                }
+            }, 1000);
+        }
+        
+        // Reminder Functions
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    hasNotificationPermission = permission === 'granted';
+                    if (hasNotificationPermission) {
+                        alert('Notifications enabled! You\'ll receive posture reminders.');
+                    } else {
+                        alert('Notifications not granted. You\'ll see in-app reminders instead.');
+                    }
+                });
+            } else {
+                alert('Notifications not supported. You\'ll see in-app reminders instead.');
+            }
+        }
+        
+        function startReminders() {
+            const interval = parseInt(document.getElementById('reminderInterval').value);
+            if (interval === 0) return;
+            
+            stopReminders(); // Clear any existing reminders
+            
+            function scheduleNextReminder() {
+                reminderTimeoutId = setTimeout(() => {
+                    showReminder();
+                    scheduleNextReminder(); // Schedule the next one
+                }, interval * 60 * 1000);
+            }
+            
+            scheduleNextReminder();
+            updateReminderStatus();
+        }
+        
+        function stopReminders() {
+            if (reminderTimeoutId) {
+                clearTimeout(reminderTimeoutId);
+                reminderTimeoutId = null;
+            }
+            updateReminderStatus();
+        }
+        
+        function showReminder() {
+            if (hasNotificationPermission && 'Notification' in window) {
+                new Notification('Posture Check Time!', {
+                    body: 'Time for a quick posture check. Take a moment to reset your alignment.',
+                });
+            } else {
+                // Show in-app banner
+                const banner = document.getElementById('reminderBanner');
+                banner.classList.add('show');
+                playChime();
+            }
+        }
+        
+        function dismissReminder() {
+            const banner = document.getElementById('reminderBanner');
+            banner.classList.remove('show');
+        }
+        
+        function updateReminderStatus() {
+            const interval = parseInt(document.getElementById('reminderInterval').value);
+            const status = document.getElementById('reminderStatus');
+            
+            if (interval === 0 || !reminderTimeoutId) {
+                status.textContent = 'Reminders are off';
+            } else {
+                status.textContent = `Reminders every ${interval} minutes`;
+            }
+        }
+        
+        // Stats and Tracking
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayLogs = postureLog.filter(log => log.date === today);
+            
+            // Week calculation
+            const weekStart = new Date();
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            const weekStartStr = weekStart.toISOString().split('T')[0];
+            const weekLogs = postureLog.filter(log => log.date >= weekStartStr);
+            
+            // Streak calculation
+            let streak = 0;
+            const sortedDates = [...new Set(postureLog.map(log => log.date))].sort().reverse();
+            for (let i = 0; i < sortedDates.length; i++) {
+                const date = new Date(sortedDates[i]);
+                const expectedDate = new Date();
+                expectedDate.setDate(expectedDate.getDate() - i);
+                
+                if (date.toISOString().split('T')[0] === expectedDate.toISOString().split('T')[0]) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            document.getElementById('todayCount').textContent = todayLogs.length;
+            document.getElementById('weekCount').textContent = weekLogs.length;
+            document.getElementById('streakCount').textContent = streak;
+            document.getElementById('totalCount').textContent = postureLog.length;
+        }
+        
+        function generateWeeklyChart() {
+            const chart = document.getElementById('weeklyChart');
+            chart.innerHTML = '';
+            
+            const today = new Date();
+            const days = [];
+            
+            // Generate last 7 days
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                days.push(date);
+            }
+            
+            const maxCount = Math.max(1, ...days.map(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                return postureLog.filter(log => log.date === dateStr).length;
+            }));
+            
+            days.forEach(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                const count = postureLog.filter(log => log.date === dateStr).length;
+                const height = Math.max(10, (count / maxCount) * 100);
+                
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = height + '%';
+                bar.title = `${date.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' })}: ${count} checks`;
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = date.toLocaleDateString('en', { weekday: 'short' });
+                
+                bar.appendChild(label);
+                chart.appendChild(bar);
+            });
+        }
+        
+        // Export Functions
+        function exportData(format) {
+            if (postureLog.length === 0) {
+                alert('No data to export yet. Complete some posture checks first!');
+                return;
+            }
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            let filename, content, mimeType;
+            
+            if (format === 'json') {
+                filename = `posture-log-${timestamp}.json`;
+                content = JSON.stringify(postureLog, null, 2);
+                mimeType = 'application/json';
+            } else if (format === 'csv') {
+                filename = `posture-log-${timestamp}.csv`;
+                const headers = 'Date,Time,Type\n';
+                const rows = postureLog.map(log => {
+                    const date = new Date(log.timestamp);
+                    return `${log.date},${date.toLocaleTimeString()},${log.type}`;
+                }).join('\n');
+                content = headers + rows;
+                mimeType = 'text/csv';
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            playChime();
+        }
+        
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            playChime();
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        // Share Function
+        function shareApp() {
+            const shareData = {
+                title: 'Posture Improvement Tracker',
+                text: 'Check out this gentle posture improvement app with tracking and reminders!',
+                url: window.location.href
+            };
+            
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('App link copied to clipboard!');
+                }).catch(() => {
+                    alert('Share URL: ' + window.location.href);
+                });
+            }
+        }
+        
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
-Add working app content to index.html
